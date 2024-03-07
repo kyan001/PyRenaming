@@ -26,14 +26,14 @@ class test_renaming(unittest.TestCase):
 
     def test_config(self):
         with patch("sys.stdout", new=io.StringIO()) as fake_out:
-            command_line.main(["-c", "renaming.toml"])
+            command_line.main(["-c", "renaming.toml", "--dry-run"])
             self.assertIn("renaming.toml", fake_out.getvalue())
             command_line.main(["--config", "renaming.toml"])
             self.assertIn("renaming.toml", fake_out.getvalue())
 
     def test_folder(self):
         with patch("sys.stdout", new=io.StringIO()) as fake_out:
-            command_line.main(["-f", "tests"])
+            command_line.main(["-f", "tests", "--dry-run"])
             self.assertIn("tests", fake_out.getvalue())
             command_line.main(["--folder", "tests"])
             self.assertIn("tests", fake_out.getvalue())
