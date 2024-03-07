@@ -1,0 +1,22 @@
+[renaming]
+old = "full filename with date - \\d{4}\\.\\d{2}\\.\\d{2} - .*\\.mp4"
+    # The old filename regex pattern to ensure the file is correct.
+    # `\\d` means a digit, `{4}` means 4 times, so `\\d{4}` means 4 digits.
+    # `.` means any character, `\\.` means a dot, `,*` means 0 or more times, `.+`` means 1 or more times.
+
+new = "{abbr}-{YYYY}{MMDD}-{title}-{i:02}.mp4"
+    # The new filename pattern (but not regex).
+    # `{var}` means replaced by `var` in `[vars]` or `[patterns]`.
+    # `{i}` is the index of the file in the folder, starting from 1.
+    # `{i:02}` means the index with 2 digits, padding with 0 if necessary.
+    # e.g. `FOO-20240307-Title-01.mp4`.
+
+# Custom static variables section
+[vars]  # The values of the variables in this section replace the same variables in the new filename pattern.
+abbr = "FOO"  # `abbr` is the var name and `FOO` is the value
+
+# Custom dynamic variables section
+[patterns]  # Values of the variables in this section are extracted from the old filename using regex pattern before replace the same variables in the new filename pattern.
+YYYY = "full filename with date - (\\d{4})\\.\\d{2}\\.\\d{2} - .*.mp4"  # `YYYY` is the var name and `(\\d{4})` is the regex pattern.
+MMDD = "full filename with date - \\d{4}\\.(\\d{2})\\.(\\d{2}) - .*.mp4"  # Multiple matches will concatenate.
+title = "full filename with date - \\d{4}\\.\\d{2}\\.\\d{2} - (.*)\\.mp4"

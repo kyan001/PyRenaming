@@ -1,0 +1,10 @@
+[renaming]
+old = "Test file - \\d{4}.\\d{2}.\\d{2} - .*.txt"
+new = "{abbr}-{YYYY}{MMDD}-{i:02}.txt"
+
+[vars]
+abbr = "TF"
+
+[patterns]
+YYYY = "Test file - (\\d{4})\\.\\d{2}\\.\\d{2} - .*.txt"
+MMDD = "Test file - \\d{4}.(\\d{2}).(\\d{2}) - .*.txt"
