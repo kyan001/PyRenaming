@@ -14,7 +14,7 @@ else:
     raise ImportError("No TOML parser lib found in {libs}!")
 
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 CONFIG_FILENAME = 'renaming.toml'  # the default config file name

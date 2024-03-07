@@ -13,7 +13,6 @@ def main(assigned_args: list | None = None):
     parser.add_argument("-f", "--folder", dest="folder", help="The folder path of the files to be renamed. Default is the current folder.")
     parser.add_argument("-d", "--dry-run", dest="dry_run", action="store_true", help="Dry run. Do not actully rename the files.")
     args = parser.parse_args(assigned_args)
-    print(parser)
     renaming.run_renaming(args.config, folder=args.folder, dry_run=args.dry_run)
 
 
