@@ -14,7 +14,7 @@ else:
     raise ImportError("No TOML parser lib found in {libs}!")
 
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 
 CONFIG_FILENAME = 'renaming.toml'  # the default config file name
@@ -27,12 +27,12 @@ def _soft_raise(text: str):
     cit.bye()
 
 
-def parse_config(path: str = CONFIG_FILENAME, folder: str = cct.get_path(__file__).parent) -> dict:
+def parse_config(path: str = CONFIG_FILENAME, folder: str = os.getcwd()) -> dict:
     """Parse the config file.
 
     Args:
         path (str): The path or the file name of the config file.
-        folder (str): The folder path of the config file. Default is the folder of this file.
+        folder (str): The folder path of the config file. Default is the current working directory.
 
     Returns:
         dict: The config dict.
@@ -70,10 +70,17 @@ def validate_filename(path: str, pattern: str) -> bool:
 
 
 def run_renaming(config_path: str, folder: str, dry_run: bool = False):
+    """Run the renaming process.
+
+    Args:
+        config_path (str): The path or the file name of the config file.
+        folder (str): The folder path of the config file. Default is the current working directory.
+        dry_run (bool): Dry run mode. Default is False.
+    """
     if not config_path:
         config_path = CONFIG_FILENAME
     if not folder:
-        folder = cct.get_path(__file__).parent
+        folder = os.getcwd()
     cit.info(f"Folder: {folder}")
     cit.info(f"Config: {config_path}")
     config: dict = parse_config(config_path, folder)
