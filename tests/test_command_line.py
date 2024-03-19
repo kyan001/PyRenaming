@@ -26,17 +26,24 @@ class test_renaming(unittest.TestCase):
 
     def test_config(self):
         with patch("sys.stdout", new=io.StringIO()) as fake_out:
-            command_line.main(["-c", "renaming.toml", "--dry-run"])
+            command_line.main(["-c", "renaming.toml"])
             self.assertIn("renaming.toml", fake_out.getvalue())
             command_line.main(["--config", "renaming.toml"])
             self.assertIn("renaming.toml", fake_out.getvalue())
 
     def test_folder(self):
         with patch("sys.stdout", new=io.StringIO()) as fake_out:
-            command_line.main(["-f", "tests", "--dry-run"])
+            command_line.main(["-f", "tests"])
             self.assertIn("tests", fake_out.getvalue())
             command_line.main(["--folder", "tests"])
             self.assertIn("tests", fake_out.getvalue())
+
+    def test_confirm(self):
+        with patch("sys.stdout", new=io.StringIO()) as fake_out:
+            command_line.main(["-y"])
+            self.assertNotIn("?", fake_out.getvalue())
+            command_line.main(["--yes"])
+            self.assertNotIn("?", fake_out.getvalue())
 
 
 if __name__ == "__main__":

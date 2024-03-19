@@ -4,19 +4,39 @@ old = "full filename with date - \\d{4}\\.\\d{2}\\.\\d{2} - .*\\.mp4"
     # `\\d` means a digit, `{4}` means 4 times, so `\\d{4}` means 4 digits.
     # `.` means any character, `\\.` means a dot, `,*` means 0 or more times, `.+`` means 1 or more times.
 
-new = "{abbr}-{YYYY}{MMDD}-{title}-{i:02}.mp4"
+new = "{foo}-{YYYY}{MMDD}-{title}-{{i:02}}.mp4"
     # The new filename pattern (but not regex).
-    # `{var}` means replaced by `var` in `[vars]` or `[patterns]`.
-    # `{i}` is the index of the file in the folder, starting from 1.
-    # `{i:02}` means the index with 2 digits, padding with 0 if necessary.
+    # All variables are optional.
+    # Variables are defined in the `[vars]` and `[patterns]` sections. `{var}` means replaced by `var` in `[vars]` or `[patterns]`.
+    # Variables are between `{` and `}`.
+    # `{{i}}` is the index of the file in the folder, starting from 1. Index is wrapped by `{{` and `}}`.
+    # `{{i:02}}` means the index with 2 digits, padding with 0 if necessary.
+    # `{{i}}` insertion occurs after the replacements.
     # e.g. `FOO-20240307-Title-01.mp4`.
+
+confirm = false
+    # If `true` or not set, the program will ask for confirmation before renaming.
+    # If `false`, the program will rename without asking.
 
 # Custom static variables section
 [vars]  # The values of the variables in this section replace the same variables in the new filename pattern.
-abbr = "FOO"  # `abbr` is the var name and `FOO` is the value
+foo = "bar"  # `foo` is the var name and `bar` is the value
 
 # Custom dynamic variables section
 [patterns]  # Values of the variables in this section are extracted from the old filename using regex pattern before replace the same variables in the new filename pattern.
-YYYY = "full filename with date - (\\d{4})\\.\\d{2}\\.\\d{2} - .*.mp4"  # `YYYY` is the var name and `(\\d{4})` is the regex pattern.
-MMDD = "full filename with date - \\d{4}\\.(\\d{2})\\.(\\d{2}) - .*.mp4"  # Multiple matches will concatenate.
+YYYY = "full filename with date - (\\d{4})\\.\\d{2}\\.\\d{2} - .*\\.mp4"
+    # `YYYY` is the var name and `(\\d{4})` is the regex pattern.
+
+MMDD = "full filename with date - \\d{4}\\.(\\d{2})\\.(\\d{2}) - .*\\.mp4"
+    # Multiple matches will concatenate.
+
 title = "full filename with date - \\d{4}\\.\\d{2}\\.\\d{2} - (.*)\\.mp4"
+
+# Replace substring in the new filename
+[replaces]  # The key is the old substring and the value is the new substring.
+"old substring" = "new substring"
+    # Replace `old substring` with `new substring` in the new filename.
+    # Replacing occures after the variables and patterns insertion, and before the index insertion.
+
+".jpeg" = ".jpg"
+    # multiple replacements will be applied in order.

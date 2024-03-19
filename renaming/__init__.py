@@ -14,7 +14,7 @@ else:
     raise ImportError("No TOML parser lib found in {libs}!")
 
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 
 
 CONFIG_FILENAME = 'renaming.toml'  # the default config file name
@@ -69,7 +69,20 @@ def validate_filename(path: str, pattern: str) -> bool:
         return False
 
 
-def run_renaming(config_path: str, folder: str, dry_run: bool = False):
+def get_available_filename(filename_pattern: str, root: str, i: int = 1) -> str:
+    """Get an available filename."""
+    new_filename = filename_pattern.format(i=i)
+    new_filepath = os.path.join(root, new_filename)
+    if cct.get_path(new_filepath).exists:
+        if new_filename == filename_pattern:  # {i} not in new filename pattern
+            _soft_raise(f"File `{new_filename}` already exists.")
+        else:
+            return get_available_filename(filename_pattern, root, i + 1)
+    else:
+        return new_filename
+
+
+def run_renaming(config_path: str, folder: str, dry_run: bool = False, confirm: bool = True):
     """Run the renaming process.
 
     Args:
@@ -77,6 +90,7 @@ def run_renaming(config_path: str, folder: str, dry_run: bool = False):
         folder (str): The folder path of the config file. Default is the current working directory.
         dry_run (bool): Dry run mode. Default is False.
     """
+    cit.rule("Renaming")
     if not config_path:
         config_path = CONFIG_FILENAME
     if not folder:
@@ -85,33 +99,36 @@ def run_renaming(config_path: str, folder: str, dry_run: bool = False):
     cit.info(f"Config: {config_path}")
     config: dict = parse_config(config_path, folder)
     rename_count: int = 0
-    vars: dict = {}
+    vars: dict = config.get("vars") or {}
     validator = functools.partial(validate_filename, pattern=config["renaming"]["old"])
     cct.ls_tree(folder, to_visible=validator)
     if dry_run:
         cit.warn("[DRY-RUN] No file will be actually renamed.")
+    cit.title("Renames")
     for path in cct.get_paths(folder, filter=validator):
         path = cct.get_path(path)
-        if static_vars := config.get("vars"):
-            vars.update(static_vars)
-        if patterns := config.get("patterns"):
-            for var, pattern in patterns.items():
-                if matchs := re.match(pattern, path.basename):
-                    vars[var] = "".join(matchs.groups())
-                else:
-                    cit.warn(f"Pattern `{pattern}` not matched in `{path.basename}`")
-        for i in range(1, 99):
-            try:
-                new_filename = config["renaming"]["new"].format(**vars, i=i)
-            except KeyError as e:
-                _soft_raise(fr"New filename pattern KeyError: Key {e} not found in `{config["renaming"]["new"]}` both `\[vars]` and `\[patterns]` sections.")
-            new_filepath = os.path.join(path.parent, new_filename)
-            if not cct.get_path(new_filepath).exists:
-                if not dry_run:
-                    cct.move_file(path, new_filepath)
-                cit.info(f"Renamed: `[u]{path.basename}[/]` => `[u]{new_filename}[/]`")
-                rename_count += 1
+        for var_name in (patterns := config.get("patterns") or {}):
+            if matchs := re.match(patterns[var_name], path.basename):
+                vars[var_name] = "".join(matchs.groups())
+            else:
+                cit.warn(f"Pattern `{patterns[var_name]}` not matched in `{path.basename}`")
+        try:
+            new_filename: str = config["renaming"]["new"].format(**vars)
+        except KeyError as e:
+            _soft_raise(fr"New filename pattern KeyError: Key {e} not found in `{config["renaming"]["new"]}` both `\[vars]` and `\[patterns]` sections.")
+        for old_substring in (replaces := config.get("replaces") or {}):
+            new_filename = new_filename.replace(old_substring, replaces[old_substring])
+        new_filename = get_available_filename(new_filename, path.parent)
+        new_filepath = os.path.join(path.parent, new_filename)
+        rename_text = f"Renaming [u]{path.basename}[/] => [u]{new_filename}[/]"
+        if confirm or config["renaming"].get("confirm") in (None, True):
+            if cit.get_input(f"{rename_text}, ok? (Y/n)", default="Y").lower() != 'y':
+                cit.warn("Rename skipped.")
                 break
-        else:
-            cit.warn("Too many files with the same date.")
+        if not dry_run:
+            cct.move_file(path, new_filepath)
+        cit.info("[green]✓[/] Renamed.")
+        rename_count += 1
+        break
+    cit.end()
     cit.panel(f"Renamed {rename_count} files.", expand=False)
