@@ -14,7 +14,7 @@ else:
     raise ImportError("No TOML parser lib found in {libs}!")
 
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 CONFIG_FILENAME = 'renaming.toml'  # the default config file name
@@ -76,13 +76,12 @@ def get_available_filename(filename_pattern: str, root: str, i: int = 1) -> str:
     if cct.get_path(new_filepath).exists:
         if new_filename == filename_pattern:  # {i} not in new filename pattern
             _soft_raise(f"File `{new_filename}` already exists.")
-        else:
-            return get_available_filename(filename_pattern, root, i + 1)
+        return get_available_filename(filename_pattern, root, i + 1)
     else:
         return new_filename
 
 
-def run_renaming(config_path: str, folder: str, dry_run: bool = False, confirm: bool = True):
+def run_renaming(config_path: str, folder: str, dry_run: bool = False, confirm: bool | None = None):
     """Run the renaming process.
 
     Args:

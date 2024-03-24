@@ -25,7 +25,7 @@ class test_renaming(unittest.TestCase):
     def test_parse_config(self):
         folder = cct.get_path(__file__).parent
         config_path = os.path.join(folder, 'renaming.toml')
-        self.assertEqual(renaming.parse_config(config_path, folder)['vars']['abbr'], 'TF')
+        self.assertEqual(renaming.parse_config(config_path, folder)['vars']['name'], 'TF')
 
     def test_validate_filename(self):
         self.assertTrue(renaming.validate_filename("test-2024", "test-\\d{4}"))

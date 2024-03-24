@@ -1,6 +1,6 @@
 [renaming]
 old = "Testfile-\\d{4}\\d{2}\\d{2}-.*.txt"
-new = "{name}-{YYYY}{MMDD}-{i:02}.txt"
+new = "{name}-{YYYY}{MMDD}-{{i:02}}.txt"
 confirm = false
 
 [vars]

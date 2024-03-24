@@ -14,7 +14,7 @@ def main(assigned_args: list | None = None):
     parser.add_argument("-d", "--dry-run", dest="dry_run", action="store_true", help="Dry run. Do not actully rename the files.")
     parser.add_argument("-y", "--yes", dest="yes", action="store_true", help="No confirmation. Rename all files without asking.")
     args = parser.parse_args(assigned_args)
-    renaming.run_renaming(args.config, folder=args.folder, dry_run=args.dry_run, confirm=(not args.yes))
+    renaming.run_renaming(args.config, folder=args.folder, dry_run=args.dry_run, confirm=(False if args.yes else None))
 
 
 if __name__ == "__main__":

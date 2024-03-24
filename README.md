@@ -8,8 +8,14 @@
 ```sh
 pip install renaming  # Install renaming
 
-renaming --help  # Command-line help message.
 renaming  # Rename files in the current directory according to `renaming.toml`.
+renaming -c/--config $config_file  # Rename files in the current directory according to "$config_file".
+renaming -f/--folder $folder  # Rename files in "$folder" according to `renaming.toml`.
+renaming -d/--dry-run  # Dry run. Show what would have been done, but do not actually rename anything.
+renaming -y/--yes  # Do not ask for confirmation before renaming files.
+
+renaming -h/--help  # Command-line help message.
+renaming -v/--version  # Show version information.
 ```
 
 ## Installation
