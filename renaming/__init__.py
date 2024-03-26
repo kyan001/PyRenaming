@@ -14,7 +14,7 @@ else:
     raise ImportError("No TOML parser lib found in {libs}!")
 
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 
 CONFIG_FILENAME = 'renaming.toml'  # the default config file name
@@ -119,9 +119,9 @@ def run_renaming(config_path: str, folder: str, dry_run: bool = False, confirm: 
             new_filename = new_filename.replace(old_substring, replaces[old_substring])
         new_filename = get_available_filename(new_filename, path.parent)
         new_filepath = os.path.join(path.parent, new_filename)
-        rename_text = f"Renaming [u]{path.basename}[/] => [u]{new_filename}[/]"
+        cit.info(f"Renaming [u]{path.basename}[/] => [u]{new_filename}[/]")
         if confirm or config["renaming"].get("confirm") in (None, True):
-            if cit.get_input(f"{rename_text}, ok? (Y/n)", default="Y").lower() != 'y':
+            if cit.get_input("ok? (Y/n)", default="Y").lower() != 'y':
                 continue
         if not dry_run:
             cct.move_file(path, new_filepath)
