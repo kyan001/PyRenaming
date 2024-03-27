@@ -14,7 +14,7 @@ else:
     raise ImportError("No TOML parser lib found in {libs}!")
 
 
-__version__ = "0.1.3"
+__version__: str = "0.1.4"
 
 
 CONFIG_FILENAME = 'renaming.toml'  # the default config file name
@@ -44,14 +44,14 @@ def parse_config(path: str = CONFIG_FILENAME, folder: str = os.getcwd()) -> dict
     else:
         return parse_config(os.path.join(cct.get_path(folder), config_path))
     with open(config_path, 'rb') as fl:
-        config = toml_parser.load(fl)
+        config: dict = toml_parser.load(fl)
     if not config:
         _soft_raise(f"Config file is empty: {config_path}")
     if config.get('renaming') is None:
         _soft_raise(fr"Config file is missing the `\[renaming]` section: {config_path}")
-    if not config.get('renaming').get('old'):
+    if not config['renaming'].get('old'):
         _soft_raise(fr"Config file is missing the `old=` in the `\[renaming]` section: {config_path}")
-    if not config.get('renaming').get('new'):
+    if not config['renaming'].get('new'):
         _soft_raise(fr"Config file is missing the `new=` in the `\[renaming]` section: {config_path}")
     if config.get('vars') is None and config.get('patterns') is None:
         _soft_raise(fr"Config file is missing both `\[vars]` and `\[patterns]` sections: {config_path}")
@@ -62,7 +62,7 @@ def parse_config(path: str = CONFIG_FILENAME, folder: str = os.getcwd()) -> dict
 
 def validate_filename(path: str, pattern: str) -> bool:
     """Validate the file name."""
-    filepath = cct.get_path(path)
+    filepath: cct.Path = cct.get_path(path)
     if re.match(pattern, filepath.basename):
         return True
     else:
@@ -71,8 +71,8 @@ def validate_filename(path: str, pattern: str) -> bool:
 
 def get_available_filename(filename_pattern: str, root: str, i: int = 1) -> str:
     """Get an available filename."""
-    new_filename = filename_pattern.format(i=i)
-    new_filepath = os.path.join(root, new_filename)
+    new_filename: str = filename_pattern.format(i=i)
+    new_filepath: str = os.path.join(root, new_filename)
     if cct.get_path(new_filepath).exists:
         if new_filename == filename_pattern:  # {i} not in new filename pattern
             _soft_raise(f"File `{new_filename}` already exists.")
